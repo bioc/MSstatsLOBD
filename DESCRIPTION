@@ -1,0 +1,30 @@
+Type: Package
+Package: MSstatsLODQ
+Title: Calculate and return the LoD/LoQ of the data provided
+Version: 0.9.0
+Date: 2021-04-12
+Description: Calculate and return the LoD/LoQ of the data provided
+Authors@R: c(person("Devon", "Kohler", email = "kohler.d@northeastern.edu", role = c("aut", "cre")),
+            person("Tsung-Heng", "Tsai", email = "tsai.tsungheng@gmail.com", role = "aut"),
+            person("Ting", "Huang", email = "thuang0703@gmail.com", role=c("aut")),
+            person("Mateusz", "Staniak", email = "mtst@mstaniak.pl", role = c("aut")),
+          	person("Meena", "Choi", email = "mnchoi67@gmail.com", role="aut"),
+          	person("Olga", "Vitek", email = "o.vitek@northeastern.edu", role = "aut"))
+License: Artistic-2.0
+Depends: R (>= 4.0)
+Imports: minpack.lm
+Suggests: 
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    testthat,
+    covr
+LinkingTo: Rcpp
+VignetteBuilder: knitr
+biocViews: ImmunoOncology, MassSpectrometry, Proteomics, Software, DifferentialExpression, 
+           OneChannel, TwoChannel, Normalization, QualityControl
+BugReports: https://github.com/Vitek-Lab/MSstatsLODQ/issues
+Encoding: UTF-8
+LazyData: TRUE
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
