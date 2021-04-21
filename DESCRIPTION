@@ -1,13 +1,12 @@
 Type: Package
-Package: MSstatsLODQ
-Title: Calculate and return the LoD/LoQ of the data provided
+Package: MSstatsLOBD
+Title: Assay characterization: estimation of limit of blanc(LoB) and limit of detection(LOD)
 Version: 0.9.0
 Date: 2021-04-12
 Description: Calculate and return the LoD/LoQ of the data provided
 Authors@R: c(person("Devon", "Kohler", email = "kohler.d@northeastern.edu", role = c("aut", "cre")),
-            person("Tsung-Heng", "Tsai", email = "tsai.tsungheng@gmail.com", role = "aut"),
-            person("Ting", "Huang", email = "thuang0703@gmail.com", role=c("aut")),
             person("Mateusz", "Staniak", email = "mtst@mstaniak.pl", role = c("aut")),
+            person("Cyril", "Galitzine", email = "cyrildgg@gmail.com", role = "aut"),
           	person("Meena", "Choi", email = "mnchoi67@gmail.com", role="aut"),
           	person("Olga", "Vitek", email = "o.vitek@northeastern.edu", role = "aut"))
 License: Artistic-2.0
