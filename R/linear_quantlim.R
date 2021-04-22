@@ -206,12 +206,12 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
   }
 
   data.frame(CONCENTRATION = xaxis_orig_2, 
-             MEAN=mean_bilinear,
-             LOW= lower_Q_pred, 
+             MEAN =mean_bilinear,
+             LOW = lower_Q_pred, 
              UP = upper_Q_pred, 
              LOB= rep(LOD_pred, length(upper_Q_pred)),  
              LOD = rep(LOQ_pred, length(upper_Q_pred)),
-             SLOPE = slope_lin , 
+             SLOPE = slope_lin, 
              INTERCEPT = intercept_lin, 
              NAME = rep(datain$NAME[1], length(upper_Q_pred)),
              METHOD = rep("LINEAR", length(upper_Q_pred)))
