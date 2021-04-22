@@ -1,0 +1,263 @@
+---
+title: "LOB/LOD Estimation Workflow"
+author: "Cyril Galitzine"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+citation_package: natbib
+latex_engine: pdflatex
+--- 
+
+
+Load the required packages
+
+```{r error=FALSE, warning=FALSE, message=FALSE}
+library(MSstatsLODQ)
+library(tidyverse)
+```
+
+This Vignette provides an example workflow for how to use the package 
+MSstatsLODQ.
+
+## Installation
+
+To install this package, start R (version "4.0") and enter:
+
+``` {r, eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("MSstatsLODQ")
+```
+
+
+# 1 Example dataset
+
+## 1 Introduction
+
+We will estimate the LOB/LOD for a few peptides an assay available on the CPTAC 
+(Clinical Proteomic Tumor Analysis Consortium) assay portal c.f. [@Thomas]. The 
+dataset contains spike in data for 43 distinct peptides. For each peptide, 8 
+distinct concentration spikes for 3 different replicates are measured. The 
+Skyline files for the assay along with details about the experiment can be 
+obtained from this webpage: https://assays.cancer.gov. The particular dataset 
+examined here (called JHU_DChan_HZhang_ZZhang) can be found at <https://panoramaweb.org/labkey/project/CPTAC%20Assay%20Portal/JHU_DChan_HZhang_ZZhang/Serum_QExactive_GlycopeptideEnrichedPRM/begin.view?>.
+It should be downloaded from the MSStats website 
+<http://msstats.org/?smd_process_download=1&download_id=548>. 
+
+The data is then exported in a csv file (${\tt calibration\_data\_raw.csv}$) from Skyline. This 
+is done in Skyline by selecting File $\rightarrow$ Export $\rightarrow$ Report 
+$\rightarrow$ QuaSAR input and then clicking Export. The csv file contains the 
+measured peak area for each fragment of each light and heavy version of each peptide.
+Depending on the format of the Skyline file and depending on whether standards 
+were used, the particular outputs obtained in the csv file may vary. In this 
+particular case the following variables are obtained in the output file 
+${\tt calibration\_data\_raw.csv}$: ${\tt File\ Name,	Sample\ Name,	Replicate\ Name,	Protein\ Name,	Peptide\ Sequence,	Peptide\ Modified\ Sequence,}$	
+${\tt Precursor\ Charge,	Product\ Charge,}$	${\tt Fragment\ Ion,	Average\ Measured\ Retention\ Time}$,
+${\tt SampleGroup,	IS\ Spike,}$	${\tt Concentration,	 Replicate,light\ Area,	heavy\ Area}$. 
+A number of variables are byproducts of the acquisition process and will not be 
+considered for the following, i.e. 
+${\tt File\ Name,	Sample\ Name,	Replicate\ Name, SampleGroup,	IS\ Spike}$.  
+Variables that are important for the assay characterization are detailed below 
+(others are assumed to be self explanatory):
+
+ + ${\tt	Pepdide sequence}$ Name of the peptide sequence
+ + ${\tt	Concentration}$ Value of the known spiked concentration in pmol.
+ + ${\tt	Replicate}$ Number of the technical replicate
+ + ${\tt	light\ Area}$ Peak area of the light (measured)
+ + ${\tt	heavy\ Area}$ Peak area of the heavy (reference) peptide
+
+
+## 2 Loading and Normalization of the data
+
+### 2.1 Load the raw data file and check its content.
+
+```{r}
+head(raw_data)
+```
+
+### 2.2 Normalize Dataset
+
+We normalize the intensity of the light peptides using that of the heavy 
+peptides. This corrects any systematic errors that can occur during a run or 
+across replicates. The calculation is greatly simplified by the use of the 
+${\tt tidyr}$ and ${\tt dplyr}$ packages. The area from all the different 
+peptide fragments is first summed then log transformed. The median intensity of 
+the reference heavy peptides ${\tt medianlog2heavy}$ is calculated. Their 
+intensities should ideally remain constant across runs since the spiked 
+concentration of the heavy peptide is constant. The difference between the 
+median for all the heavy peptide spikes is calculated. It is then used to 
+correct (i.e. to normalize) the intensity of the light peptides 
+${\tt log2light}$ to obtain the adjusted intensity ${\tt log2light\_norm}$. 
+The intensity is finally converted back to original space.
+
+```{r tidy=FALSE, warning=FALSE}
+#Select variable that are need
+df <- tbl_df(raw_data) %>%  select(Peptide.Sequence,Precursor.Charge, 
+                                   Product.Charge, Fragment.Ion,Concentration, 
+                                   Replicate, light.Area, heavy.Area, 
+                                   SampleGroup, File.Name)
+
+#Convert factors to numeric and remove NA values:
+df <- df %>% 
+  mutate(heavy.Area = as.numeric(heavy.Area)) %>% filter(!is.na(heavy.Area))
+
+#Sum area over all fragments
+df2 <- df %>% group_by(Peptide.Sequence, Replicate, SampleGroup, 
+                       Concentration, File.Name) %>%
+  summarize(A_light = sum(light.Area), A_heavy = sum(heavy.Area))
+
+#Convert to log scale
+df2 <- df2 %>% mutate(log2light = log2(A_light), log2heavy = log2(A_heavy))
+
+#Calculate median of heavy(reference) for a run
+df3 <- df2 %>% group_by(Peptide.Sequence) %>% 
+  summarize(medianlog2light = median(log2light), 
+            medianlog2heavy= median(log2heavy))
+
+#Modify light intensity so that the intensity of the heavy is constant (=median) across a run.
+df4 <- left_join(df2,df3, by = "Peptide.Sequence") %>% 
+  mutate(log2light_delta = medianlog2light - log2light) %>% 
+  mutate(log2heavy_norm = log2heavy + log2light_delta, 
+         log2light_norm = log2light + log2light_delta) %>% 
+  mutate(A_heavy_norm = 2**log2heavy_norm, A_light_norm = 2**log2light_norm)
+
+#Format the data for MSstats:
+#Select the heavy area, concentration, peptide name and Replicate
+df_out <- df4 %>% ungroup() %>% 
+  select(A_heavy_norm, Concentration, Peptide.Sequence, Replicate)
+
+#Change the names according to MSStats requirement:
+df_out <- df_out %>% rename(INTENSITY = A_heavy_norm, 
+                            CONCENTRATION = Concentration, 
+                            NAME = Peptide.Sequence, REPLICATE = Replicate) 
+
+# We choose NAME as the peptide sequence
+head(df_out)
+```
+
+
+# 3 LOB/LOD definitions
+
+## 3.1 Assay characterization procedure
+
+\begin{figure}[ht] 
+\centerline{\includegraphics[width=250pt]{LOD_example_3.pdf} }
+\caption{Calculation of the LOB and LOD for peptide FLNDTMAVYEAK of the dataset}
+\label{definition}
+\end{figure}
+
+In the following we estimate the LOB and LOD for individual peptides. The first 
+step in the estimation is to fit a function to all the (Spiked Concentration, 
+Measured Intensity) points. When the ${\tt nonlinear\_quantlim}$ function is 
+used, the function that is fit automatically adapts to the data. For instance, 
+when the data is linear, a straight line is used, while when a threshold (i.e. 
+a leveling off of the measured intensity at low concentrations) an elbow like 
+function is fit. The fit is called ${\tt MEAN}$ in the output of function 
+${\tt nonlinear\_quantlim}$  as shown in Fig.1. Each value of ${\tt MEAN}$ is 
+given for a particular ${\tt CONCENTRATION}$ value ${\tt CONCENTRATION}$ is 
+thus a discretization of x--Spiked Concentration axis. The lower and upper 
+bound of the 90% prediction interval of the fit are called ${\tt LOW}$  and 
+${\tt UP}$ in the output of ${\tt nonlinear\_quantlim}$. They correspond 
+respectively to the 5% and 95% percentile of predictions.
+
+The second step in the procedure is to estimate the upper bound of the noise in 
+the blank sample (blue dashed line in Fig. 1). It is found by assuming that 
+blank sample measurements are normally distributed.
+
+## 3.2 LOB/LOD definitions 
+
+We define the LOB as the highest apparent concentration of a peptide expected 
+when replicates of a blank sample containing no peptides are measured. This 
+amounts to finding the concentration at the intersection of the fit (which 
+represents the averaged measured intensity) with the 95% upper prediction bound 
+of the noise.
+
+The LOD is defined as the measured concentration value for which the probability
+of falsely claiming the absence of a peptide in the sample is 0.05, given a 
+probability 0.05 of falsely claiming its presence. Estimating the LOD thus 
+amounts to finding the concentration at the intersection between the 5% 
+percentile line of the prediction interval of the fit (i.e. the lower bound of 
+the 90% prediction interval) and the 95% percentile line of the blank sample. 
+At the LOB concentration, there is an 0.05 probability of false positive and a 
+50% chance of false negative. At the LOD concentration there is 0.05 probability
+of false negative and a false positive probability of 0.05 in accordance with 
+its definition. By default, a probability of 0.05 for the LOB/LOD estimation is 
+used but it can be changed, as detailed in the manual.
+
+# 4 Estimation of the LOB/LOD for dataset
+
+## 4.1 LOB/LOD estimation for a non-linear peptide
+
+```{r warning=FALSE}
+
+#Select peptide of interest:  LPPGLLANFTLLR
+spikeindata <- df_out %>% filter(NAME == "LPPGLLANFTLLR")
+
+#This contains the measured intensity for the peptide of interest
+head(spikeindata)
+
+#Call MSStatsLOD function:
+quant_out <- nonlinear_quantlim(spikeindata)
+
+head(quant_out)
+```
+
+After estimating LOB/LOD we can plot the results.
+
+```{r error=FALSE, warning=FALSE, message=FALSE}
+#plot results in the directory
+plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, address =  FALSE)
+```
+
+The threshold is captured by the fit at low concentrations. The ${\tt MEAN}$ of 
+the output of the function is the red line (mean prediction) in the plots. 
+${\tt LOW}$ is the orange line (5% percentile of predictions) while ${\tt UP}$ 
+is the upper boundary of the red shaded area. The LOB is the concentration at 
+the intersection of the fit and the estimate for the 95% upper bound of the 
+noise (blue line). A more accurate "smoother" fit can be obtained by increasing 
+the number of points ${\tt Npoints}$ used to discretize the concentration axis 
+(see manual for ${\tt nonlinear\_quantlim}$).
+
+
+The nonlinear MSStats function (${\tt nonlinear\_quantlim}$) works for all 
+peptides (those with a linear response and those with a non-linear response). We
+now examine a peptide with a linear behavior.
+
+
+## 4.2 LOB/LOD estimation for a linear peptide
+
+```{r warning=FALSE, comment=FALSE, warning=FALSE}
+#Select peptide of interest:  FLNDTMAVYEAK
+spikeindata2 <- df_out %>% filter(NAME == "FVGTPEVNQTTLYQR")
+
+#This contains the measured intensity for the peptide of interest
+head(spikeindata2)
+```
+
+```{r warning=FALSE}
+#Call MSStats function:
+quant_out2 <- nonlinear_quantlim(spikeindata2)
+
+head(quant_out2)
+```
+
+```{r error=FALSE, warning=FALSE, message=FALSE}
+#plot results in the directory: "/Users/cyrilg/Desktop/Workflow/Results"
+#Change directory appropriately for your computer
+plot_quantlim(spikeindata = spikeindata2, quantlim_out  = quant_out2, 
+              address = FALSE)
+```
+
+
+The plots indicate that the fit is observed to be linear as the response is 
+linear.
+
+
+## REFERENCES
+
+C. Galitzine et al. “Nonlinear regression improves accuracy of characterization 
+of multiplexed mass spectrometric assays.” Molecular & Cellular Proteomics 
+(2018), doi:10.1074/mcp.RA117.000322
+
