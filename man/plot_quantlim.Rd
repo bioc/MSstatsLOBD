@@ -2,12 +2,79 @@
 % Please edit documentation in R/plot_quantlim.R
 \name{plot_quantlim}
 \alias{plot_quantlim}
-\title{The goal of this function is to calculate the LOB/LOD of the data provided in the data frame.
-The function returns a new data frame containing the value of the LOB/LOD}
+\title{This function allows to plot the curve fit that is used to calculate the LOB
+and LOD with functions nonlinear_quantlim() and linear_quantlim(). The
+function outputs for each calibration curve, two pdf files each containg one
+plot. On the first, designated by _overall.pdf, the entire concentration
+range is plotted. On the second plot, designated by _zoom.pdf, the
+concentration range between 0 and xlim_plot (if specified in the argument
+of the function) is plotted. When no xlim_plot value is specified, the
+region close to LOB and LOD is automatically plotted.}
 \usage{
-plot_quantlim(spikeindata, quantlim_out, alpha, dir_output, xlim_plot)
+plot_quantlim(
+  spikeindata,
+  quantlim_out,
+  alpha,
+  xlim_plot,
+  width = 12,
+  height = 4,
+  address = ""
+)
+}
+\arguments{
+\item{spikeindata}{Data frame that contains the experimental spiked in data.
+This data frame should be identical to that used as input by function
+functions nonlinear_quantlim() or linear_quantlim().  The data frame has to
+contain the following columns : CONCENTRATION, INTENSITY (both of which are
+measurements from the spiked in experiment) and NAME which designates the
+name of the assay (e.g. the name of the peptide or protein)}
+
+\item{quantlim_out}{Data frame that was output by functions
+nonlinear_quantlim() or linear_quantlim(). It has to contain at least the
+following columns: i) CONCENTRATION: Concentration values at which the value
+of the fit is calculated ii) MEAN: The value of the curve fit iii) LOW: The
+value of the lower bound of the 95\\% prediction interval iv) UP: The value of
+the upper bound of the 95\\% prediction interval v) LOB: The value of the LOB
+(one column with identical values) vi) LOD: The value of the LOD (one
+column with identical values) vii) NAME: The name of the assay (identical
+to that provided in the input) viii) METHOD which is LINEAR or NONLINEAR}
+
+\item{alpha}{Probability level to estimate the LOB/LOD}
+
+\item{xlim_plot}{Optional argument containing the maximum xaxis value of the
+zoom plot. When no value is specified, a suitable value close to LOD is
+automatically chosen.}
+
+\item{width}{width of the saved file. Default is 10.}
+
+\item{height}{height of the saved file. Default is 10.}
+
+\item{address}{the name of folder that will store the results. Default
+folder is the current working directory. The other assigned folder has to
+be existed under the current working directory. An output pdf file is
+automatically created with the default name of "QuantLim.pdf" and
+"QuantLim_Zoom.pdf". The command address can help to specify where to store
+the file as well as how to modify the beginning of the file name. If
+address=FALSE, plot will be not saved as pdf file but showed in window}
+}
+\value{
+plot or pdf
 }
 \description{
-The goal of this function is to calculate the LOB/LOD of the data provided in the data frame.
-The function returns a new data frame containing the value of the LOB/LOD
+This function allows to plot the curve fit that is used to calculate the LOB
+and LOD with functions nonlinear_quantlim() and linear_quantlim(). The
+function outputs for each calibration curve, two pdf files each containg one
+plot. On the first, designated by _overall.pdf, the entire concentration
+range is plotted. On the second plot, designated by _zoom.pdf, the
+concentration range between 0 and xlim_plot (if specified in the argument
+of the function) is plotted. When no xlim_plot value is specified, the
+region close to LOB and LOD is automatically plotted.
+}
+\examples{
+##Select peptide of interest:  LPPGLLANFTLLR
+#spikeindata <- raw_data \%>\% filter(NAME == "LPPGLLANFTLLR")
+
+#quant_out <- nonlinear_quantlim(spikeindata)
+#plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
+               address = FALSE)
 }
