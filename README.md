@@ -1,5 +1,9 @@
 # MSstatsLODQ
 
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.org/Vitek-Lab/MSstatsLODQ.svg?branch=main)](https://travis-ci.com/Vitek-Lab/MSstatsLODQ)
+<!-- badges: end -->
+
 ## Installation 
 
 This development version is only available on Github:
