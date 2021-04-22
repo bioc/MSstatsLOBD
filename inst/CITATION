@@ -1,13 +1,22 @@
-citEntry(entry  = 'Article',
-     title  = 'MSstatsLOBD: Assay characterization: estimation of limit of blanc(LoB) and limit of detection(LOD)',
-     author = c(
-         person('Meena', 'Choi', email='choi67@purdue.edu',
-                role = c('aut', 'cre'),
-                comment = 'enhancements, bug fixes, since 2013')
-         ),
-     journal='Mol Cell Proteomics',
-     volume='17(5)',
-     page='913-924',
-     year = '2018',
-     textVersion = 'C. Galitzine et al. Nonlinear regression improves accuracy of characterization of multiplexed mass spectrometric assays, Mol Cell Proteomics, doi:10.1074/mcp.RA117.000322, 2018.'
+citHeader("To cite the MSstatsLOBD package in publications use:")
+
+citEntry(entry  = 'article',
+     title  = 'Nonlinear Regression Improves Accuracy of Characterization of Multiplexed Mass Spectrometric Assays',
+         author = personList(
+           person(given="Cyril", family="Galitzine"),
+           person(given="Jarrett D", family="Egertson"),
+           person(given="Susan", family="Abbatiello"),
+           person(given="Clark M", family="Henderson"),
+           person(given="Lindsay K", family="Pino"),
+           person(given="Michael", family="MacCoss"),
+           person(given="Andrew N", family="Hoofnagle"),
+           person(given="Olga", family="Vitek")),
+         journal = "Molecular & Cellular Proteomics",
+         volume = "17",
+         number = "5",
+         pages = "913-924",
+         year = "2018",
+         textVersion = paste("Galitzin, C., Egertson, J., Abbatiello, S., Henderson, C., Pino, L., MacCoss, M., Hoffnagle, A. and Vitek, O.",
+           "Nonlinear Regression Improves Accuracy of Characterization of Multiplexed Mass Spectrometric Assays",
+           "Molecular & Cellular Proteomics (2018),", "17(5), 913-924.")
 )
