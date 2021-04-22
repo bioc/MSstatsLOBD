@@ -1,12 +1,59 @@
-
-#' The goal of this function is to calculate the LOB/LOD of the data provided in the data frame.
-#' The function returns a new data frame containing the value of the LOB/LOD
+#' This function allows to plot the curve fit that is used to calculate the LOB 
+#' and LOD with functions nonlinear_quantlim() and linear_quantlim(). The 
+#' function outputs for each calibration curve, two pdf files each containg one 
+#' plot. On the first, designated by _overall.pdf, the entire concentration 
+#' range is plotted. On the second plot, designated by _zoom.pdf, the 
+#' concentration range between 0 and xlim_plot (if specified in the argument 
+#' of the function) is plotted. When no xlim_plot value is specified, the 
+#' region close to LOB and LOD is automatically plotted.
 #' @export
-plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plot){
+#' @param spikeindata Data frame that contains the experimental spiked in data. 
+#' This data frame should be identical to that used as input by function 
+#' functions nonlinear_quantlim() or linear_quantlim().  The data frame has to 
+#' contain the following columns : CONCENTRATION, INTENSITY (both of which are 
+#' measurements from the spiked in experiment) and NAME which designates the 
+#' name of the assay (e.g. the name of the peptide or protein)
+#' @param quantlim_out Data frame that was output by functions 
+#' nonlinear_quantlim() or linear_quantlim(). It has to contain at least the 
+#' following columns: i) CONCENTRATION: Concentration values at which the value 
+#' of the fit is calculated ii) MEAN: The value of the curve fit iii) LOW: The 
+#' value of the lower bound of the 95\% prediction interval iv) UP: The value of
+#'  the upper bound of the 95\% prediction interval v) LOB: The value of the LOB
+#'   (one column with identical values) vi) LOD: The value of the LOD (one 
+#'   column with identical values) vii) NAME: The name of the assay (identical 
+#'   to that provided in the input) viii) METHOD which is LINEAR or NONLINEAR
+#' @param alpha Probability level to estimate the LOB/LOD
+#' @param xlim_plot Optional argument containing the maximum xaxis value of the 
+#' zoom plot. When no value is specified, a suitable value close to LOD is 
+#' automatically chosen.
+#' @param width width of the saved file. Default is 10.
+#' @param height height of the saved file. Default is 10.
+#' @param address the name of folder that will store the results. Default
+#' folder is the current working directory. The other assigned folder has to
+#' be existed under the current working directory. An output pdf file is
+#' automatically created with the default name of "QuantLim.pdf" and
+#' "QuantLim_Zoom.pdf". The command address can help to specify where to store 
+#' the file as well as how to modify the beginning of the file name. If
+#' address=FALSE, plot will be not saved as pdf file but showed in window
+#' @return plot or pdf
+#' @examples
+#' ##Select peptide of interest:  LPPGLLANFTLLR
+#' #spikeindata <- raw_data %>% filter(NAME == "LPPGLLANFTLLR")
+#' 
+#' #quant_out <- nonlinear_quantlim(spikeindata)
+#' #plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
+#'                address = FALSE)
+plot_quantlim <- function(spikeindata, 
+                          quantlim_out, 
+                          alpha, 
+                          xlim_plot, 
+                          width = 12,
+                          height = 4, 
+                          address = ""){
   
   if (is.null(quantlim_out)) {
-    print("Assay fit was incorrectly calculated by linear_quantlim or nonlinear_quantlim and cannot be plotted")
-    return(NULL)
+    msg = ("Assay fit was incorrectly calculated by linear_quantlim or nonlinear_quantlim and cannot be plotted")
+    stop(msg)
   }
   
   #percentile of the prediction interval considered
@@ -15,8 +62,8 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
   }
   
   if (alpha >= 1 | alpha  <= 0) {
-    print("incorrect specified value for alpha,  0 < alpha < 1")
-    return(NULL)
+    msg = ("incorrect specified value for alpha,  0 < alpha < 1")
+    stop(msg)
   }
   
   expdata <- spikeindata
@@ -81,12 +128,27 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
     y_LOQ_pred <- up_noise
   }  
   
-  filename <- paste0(dir_output, '/', datain$NAME[1], '_', datain$METHOD[1], '_overall.pdf')
-  pdf(filename)
+  if (address != FALSE) {
+    allfiles <- list.files()
+    
+    num <- 0
+    filenaming <- paste0(address, "QuantLim")
+    finalfile <- paste0(address, "QuantLim.pdf")
+    
+    while (is.element(finalfile, allfiles)) {
+      num <- num + 1
+      finalfile <- paste0(paste(filenaming, num, sep = "-"), ".pdf")
+    }
+    
+    pdf(finalfile, width = width, height = height)
+  }
+  
   if (LOQ_pred > xaxis_orig_2[3]) {
-    C_max <- xaxis_orig_2[min(which(abs(LOQ_pred - xaxis_orig_2) == min(abs(LOQ_pred - xaxis_orig_2))) +1, length(xaxis_orig_2))]      
+    C_max <- xaxis_orig_2[min(which(abs(LOQ_pred - xaxis_orig_2) == min(
+      abs(LOQ_pred - xaxis_orig_2))) +1, length(xaxis_orig_2))]      
   }else{
-    C_max <- xaxis_orig_2[which(abs(mean(xaxis_orig_2) - xaxis_orig_2) == min(abs(mean(xaxis_orig_2) - xaxis_orig_2)))]
+    C_max <- xaxis_orig_2[which(abs(mean(xaxis_orig_2) - xaxis_orig_2) == min(
+      abs(mean(xaxis_orig_2) - xaxis_orig_2)))]
   }
   
   low_p <- paste0(alpha * 100, "%")
@@ -95,15 +157,20 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
   low_pred <- paste(low_p, 'percentile of predictions') 
   
   p1 <- ggplot() + .theme_complete_bw()
-  p1 <- p1 + geom_point(data=data.frame(Cdata,Idata) , aes(x=Cdata,y=Idata),size =pw*1.5)
-  p1 <- p1 + geom_line(data=data.frame(x=xaxis_orig_2, y=mean_bilinear, col='mean prediction', lt = 'mean'),
-                       aes(x=x, y=y, color=col), size = lw) #, color = 'black' #as.factor(c('mean bootstrap'))
-  p1 <- p1 + geom_ribbon(data=data.frame(x=xaxis_orig_2, ymin =lower_Q_pred , ymax =upper_Q_pred), 
-                         aes(x=x, ymin=ymin, ymax=ymax), fill = red1, alpha = 0.3)
-  p1 <- p1 + geom_line(data = data.frame(x=xaxis_orig_2, ymin =lower_Q_pred, col = low_pred, lt = 'Int'), 
+  p1 <- p1 + geom_point(data=data.frame(Cdata,Idata) , aes(x=Cdata,y=Idata), 
+                        size =pw*1.5)
+  p1 <- p1 + geom_line(data=data.frame(x=xaxis_orig_2, y=mean_bilinear, 
+                                       col='mean prediction', lt = 'mean'),
+                       aes(x=x, y=y, color=col), size = lw)
+  p1 <- p1 + geom_ribbon(data=data.frame(x=xaxis_orig_2, ymin =lower_Q_pred, 
+                                         ymax =upper_Q_pred), 
+                         aes(x=x, ymin=ymin, ymax=ymax), fill = red1, 
+                         alpha = 0.3)
+  p1 <- p1 + geom_line(data = data.frame(x=xaxis_orig_2, ymin =lower_Q_pred, 
+                                         col = low_pred, lt = 'Int'), 
                        aes(x=x, y=ymin, color = col), size = lw)
-  p1 <- p1 + geom_line(data=data.frame(x=xaxis_orig_2, ymax = rep(up_noise,length(xaxis_orig_2)),
-                                       col = "95% upper bound of noise"),
+  p1 <- p1 + geom_line(data=data.frame(x=xaxis_orig_2, ymax = rep(
+    up_noise,length(xaxis_orig_2)), col = "95% upper bound of noise"),
                        aes(x=x, y=ymax, color = col),
                        size  = lw)
   p1 <- p1 + scale_alpha_continuous(guide = 'none') 
@@ -123,11 +190,16 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
     theme(legend.position = c(0.05, 0.5), 
           legend.justification = c(0, 0), 
           legend.text=element_text(size=rel(rel_size_2)))
-  LOD_y <- mean_bilinear[which(abs(xaxis_orig_2 - LOD_pred) == min(abs(xaxis_orig_2 - LOD_pred)))]
-  p1 <- p1 + geom_point(data=data.frame(x= LOD_pred, y= y_LOD_pred, shape='LOD'),
-                        aes(x=x, y=y, shape = shape, guide=FALSE), colour="purple", size=5)
-  LOQ_y <- lower_Q_pred[which(abs(up_noise - lower_Q_pred) == min(abs(up_noise - lower_Q_pred)))]
-  p1 <- p1 + geom_point(data=data.frame(x= LOQ_pred, y= y_LOQ_pred, shape='LOQ'),
+  LOD_y <- mean_bilinear[which(abs(xaxis_orig_2 - LOD_pred) == min(
+    abs(xaxis_orig_2 - LOD_pred)))]
+  p1 <- p1 + geom_point(data=data.frame(x= LOD_pred, y= y_LOD_pred, 
+                                        shape='LOD'),
+                        aes(x=x, y=y, shape = shape, guide=FALSE), 
+                        colour="purple", size=5)
+  LOQ_y <- lower_Q_pred[which(abs(up_noise - lower_Q_pred) == min(
+    abs(up_noise - lower_Q_pred)))]
+  p1 <- p1 + geom_point(data=data.frame(x= LOQ_pred, y= y_LOQ_pred, 
+                                        shape='LOQ'),
                         aes(x=x, y=y, shape = shape, guide=FALSE),
                         colour=orange1,size=5)
   LOD_string <- paste('LOB=', round(LOD_pred, digits=1),sep='')   
@@ -136,13 +208,19 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
                     linetype = guide_legend(order = 1),
                     shape = guide_legend(order = 2)) + 
     guides(shape=FALSE)
-  p1 <- p1 + ggtitle(paste(datain$NAME,'\n', LOD_string,', ',LOQ_string,sep="")) + 
+  p1 <- p1 + ggtitle(paste(datain$NAME,'\n', LOD_string, ', ', 
+                           LOQ_string,sep="")) + 
     theme(plot.title = element_text(size = 20))
   print(p1)
-  dev.off()
   
-  #produce a second plot showing a zoomed view:
-  if (missing(xlim_plot)) { #missing argument for the x limit in the function, pick a x limit that is close to the LOD/LOQ:
+  if (address != FALSE) {
+    dev.off()
+  }
+  
+  # produce a second plot showing a zoomed view:
+  # missing argument for the x limit in the function
+  # pick a x limit that is close to the LOD/LOQ:
+  if (missing(xlim_plot)) { 
     
     if (LOQ_pred > 0) {
       xlim <- LOQ_pred * 3.0      
@@ -155,8 +233,20 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
     xlim <- xlim_plot
   }
   
-  filename <- paste0(dir_output, '/', datain$NAME[1], '_', datain$METHOD[1], '_zoom.pdf')
-  pdf(filename)
+  if (address != FALSE) {
+    allfiles <- list.files()
+    
+    num <- 0
+    filenaming <- paste0(address, "QuantLim_zoom")
+    finalfile <- paste0(address, "QuantLim_zoom.pdf")
+    
+    while (is.element(finalfile, allfiles)) {
+      num <- num + 1
+      finalfile <- paste0(paste(filenaming, num, sep = "-"), ".pdf")
+    }
+    
+    pdf(finalfile, width = width, height = height)
+  }
   
   Idata <- subset(Idata, Cdata < xlim)
   Cdata <- subset(Cdata, Cdata < xlim)
@@ -175,8 +265,9 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
                                        col='mean prediction',
                                        lt = 'mean'),
                        aes(x=x, y=y, color=col), 
-                       size = lw) #, color = 'black' #as.factor(c('mean bootstrap'))
-  p1 <- p1 + geom_ribbon(data=data.frame(x=xaxis_orig_2,ymin =lower_Q_pred , ymax =upper_Q_pred), 
+                       size = lw) 
+  p1 <- p1 + geom_ribbon(data=data.frame(x=xaxis_orig_2,ymin =lower_Q_pred , 
+                                         ymax =upper_Q_pred), 
                          aes(x=x, ymin=ymin, ymax=ymax),
                          fill = red1, 
                          alpha = 0.3)
@@ -186,7 +277,8 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
                                          lt = 'Int'), 
                        aes(x=x, y=ymin, color = col), 
                        size = lw)
-  p1 <- p1 + geom_line(data=data.frame(x=xaxis_orig_2, ymax = rep(up_noise,length(xaxis_orig_2)),
+  p1 <- p1 + geom_line(data=data.frame(x=xaxis_orig_2, ymax = rep(
+    up_noise,length(xaxis_orig_2)),
                                        col = "95% upper bound of noise"),
                        aes(x=x, y=ymax, color = col),
                        size = lw)
@@ -206,13 +298,16 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
     theme(legend.position = c(0.05, 0.5), 
           legend.justification = c(0, 0), 
           legend.text=element_text(size=rel(rel_size_2)))
-  LOD_y <- mean_bilinear[which(abs(xaxis_orig_2 - LOD_pred) == min(abs(xaxis_orig_2 - LOD_pred)))]
+  LOD_y <- mean_bilinear[which(abs(xaxis_orig_2 - LOD_pred) == min(
+    abs(xaxis_orig_2 - LOD_pred)))]
   p1 <- p1 + geom_point(data=data.frame(x=LOD_pred, y=y_LOD_pred, shape='LOD'),
                         aes(x=x, y=y, shape = shape, guide=FALSE),
                         colour="purple",
                         size=5)
-  LOQ_y <- lower_Q_pred[which(abs(up_noise - lower_Q_pred) == min(abs(up_noise - lower_Q_pred)))]
-  p1 <- p1 +  geom_point(data=data.frame(x= LOQ_pred, y= y_LOQ_pred, shape='LOQ'),
+  LOQ_y <- lower_Q_pred[which(abs(up_noise - lower_Q_pred) == min(
+    abs(up_noise - lower_Q_pred)))]
+  p1 <- p1 +  geom_point(data=data.frame(x= LOQ_pred, y= y_LOQ_pred, 
+                                         shape='LOQ'),
                          aes(x=x, y=y, shape = shape, guide=FALSE), 
                          colour=orange1,
                          size=5)
@@ -222,9 +317,13 @@ plot_quantlim <- function(spikeindata, quantlim_out, alpha, dir_output, xlim_plo
                     linetype = guide_legend(order = 1),
                     shape = guide_legend(order = 2)) + 
     guides(shape=FALSE)
-  p1 <- p1 + ggtitle(paste(datain$NAME,'\n', LOD_string,', ',LOQ_string,sep="")) + 
+  p1 <- p1 + ggtitle(paste(datain$NAME,'\n', LOD_string, ', ', 
+                           LOQ_string,sep="")) + 
     theme(plot.title = element_text(size = 20))
   print(p1)
-  dev.off()
+  
+  if (address != FALSE) {
+    dev.off()
+  }
   
 }
