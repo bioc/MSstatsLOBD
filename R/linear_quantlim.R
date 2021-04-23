@@ -4,17 +4,17 @@
 #' from the (Concentration, Intensity) spiked in data.
 #' The function also returns the values of the linear curve fit that allows it to be plotted. 
 #' At least 2 blank samples (characterized by Intensity = 0) are required by this function
-#'  which are used to calculate the background noise. T
-#'  he LOB is defined as the concentration at which the value of the linear fit is equal to the 95\% upper bound of the noise. 
-#'  The LOD is the concentration at which the latter is equal to the 90\% lower bound of the prediction interval (5\% quantile) of the linear fit. 
-#'  A weighted linear fit is used with weights for every unique concentration proportional to the inverse of variance between replicates.
+#' which are used to calculate the background noise. T
+#' he LOB is defined as the concentration at which the value of the linear fit is equal to the 95\% upper bound of the noise. 
+#' The LOD is the concentration at which the latter is equal to the 90\% lower bound of the prediction interval (5\% quantile) of the linear fit. 
+#' A weighted linear fit is used with weights for every unique concentration proportional to the inverse of variance between replicates.
 #' 
 #' @export
 #' @import minpack.lm 
 #' @param datain Data frame that contains the input data. 
 #' The input data frame has to contain the following columns : CONCENTRATION, 
 #' INTENSITY (both of which are measurements from the spiked in experiment) 
-#' and NAME which designates the name of the assay (e.g. the name of the peptide or protein)}
+#' and NAME which designates the name of the assay (e.g. the name of the peptide or protein)
 #' @param alpha Probability level to estimate the LOB/LOD
 #' @param Npoints Number of points to use to discretize the concentration line between 0 and the maximum spiked concentration
 #' @param Nbootstrap Number of bootstrap samples to use to calculate the prediction interval of the fit. 
@@ -243,10 +243,10 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
   }
 
   data.frame(CONCENTRATION = xaxis_orig_2, 
-             MEAN =mean_bilinear,
+             MEAN = mean_bilinear,
              LOW = lower_Q_pred, 
              UP = upper_Q_pred, 
-             LOB= rep(LOD_pred, length(upper_Q_pred)),  
+             LOB = rep(LOD_pred, length(upper_Q_pred)),  
              LOD = rep(LOQ_pred, length(upper_Q_pred)),
              SLOPE = slope_lin, 
              INTERCEPT = intercept_lin, 
