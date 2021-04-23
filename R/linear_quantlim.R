@@ -114,14 +114,14 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
   outB = matrix(NA_real_, nrow=Nbootstrap, ncol=length(xaxis_orig_2))
   outBB_pred = matrix(NA_real_, nrow=Nbootstrap*num_prediction_samples, ncol=length(xaxis_orig_2))
   change_B = rep(NA, Nbootstrap)
-  for (j in 1:Nbootstrap) {
+  for (j in seq_along(Nbootstrap)) {
     setTxtProgressBar(pb, j / Nbootstrap, title = NULL, label = NULL)
     lin.blank_B = NULL
     tmpB = tmp_all[sample(1:length(tmp_all$C), replace=TRUE), ] 
     # Pick **  observations with replacement among all that are available.
     # Blank samples are included
     weights = rep(0,length(tmpB$C))
-    for (kk in 1:length(tmpB$C)) {
+    for (kk in seq_along(tmpB$C)) {
       weights[kk] = 1 / var_v_s_unique[which( unique_c == tmpB$C[kk])]
     }   
     noise_B = mean(sample(tmp_blank$I, length(tmp_blank$I), replace=TRUE))
@@ -156,12 +156,12 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
     }
     
     if(!is.null(lin.blank_B)) {
-      for (jj in 1:num_prediction_samples){ # Calculate predictions
+      for (jj in seq_len(num_prediction_samples)){ # Calculate predictions
         outBB_pred[(j - 1) * num_prediction_samples + jj, ] = outB[j, ] + 
           rnorm(length(xaxis_orig_2), 0, sqrt(var_v_s_log))
       }
     }  else {
-      for (jj in 1:num_prediction_samples){ # Calculate predictions
+      for (jj in seq_len(num_prediction_samples)){ # Calculate predictions
         outBB_pred[(j - 1) * num_prediction_samples + jj, ] = NA
       }
     }
@@ -216,7 +216,7 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
       intercept = noise*runif(1)
       slope = median(data_linear$I) / median(data_linear$C) * runif(1) 
       weights = rep(0, length(data_linear$C))
-      for (kk in 1:length(data_linear$C)) {
+      for (kk in seq_along(data_linear$C)) {
         weights[kk] = 1 / var_v_s[which(unique_c == data_linear$C[kk])] 
       } 
       sink(null_output)

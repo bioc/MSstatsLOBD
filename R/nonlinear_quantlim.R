@@ -129,14 +129,14 @@ nonlinear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
                       ncol = length(xaxis_orig_2))
   
   change_B = rep(NA, Nbootstrap)
-  for (j in 1:Nbootstrap) {
+  for (j in seq_along(Nbootstrap)) {
     setTxtProgressBar(pb, j / Nbootstrap, title = NULL, label = NULL)
     lin.blank_B = NULL
     tmpB = tmp_all[sample(1:nrow(tmp_all), replace=TRUE), ] 
     # Pick **  observations with replacement among all that are available.
     # Blank samples are included
     weights = rep(0, length(tmpB$C) )
-    for (kk in 1:length(tmpB$C)){
+    for (kk in seq_along(tmpB$C)){
       weights[kk] = 1 / var_v_s_unique[which(unique_c == tmpB$C[kk])]
     }
     noise_re = sample(tmp_blank$I, length(tmp_blank$I), replace=TRUE)
@@ -264,7 +264,7 @@ nonlinear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
       }
     }
     
-    for (jj in 1:num_prediction_samples) { # Predictions
+    for (jj in seq_len(num_prediction_samples)) { # Predictions
       outBB_pred[(j-1)*num_prediction_samples + jj, ] = outB[j, ] +
         rnorm(length(xaxis_orig_2), 0, sqrt(var_v_s_log))
     }
@@ -322,7 +322,7 @@ nonlinear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
       intercept = data_linear$I[1] * runif(1)
       slope = median(data_linear$I) / median(data_linear$C) * runif(1)
       weights = rep(0, length(data_linear$C))
-      for (kk in 1:length(data_linear$C)){
+      for (kk in seq_along(data_linear$C)){
         weights[kk] = 1 / var_v_s[which(unique_c == data_linear$C[kk])]
       } 
       sink(null_output)
