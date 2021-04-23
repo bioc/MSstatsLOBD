@@ -41,7 +41,6 @@
 #' @return list of two ggplot2 object
 #' 
 #' @importFrom grDevices dev.off hcl pdf
-#' @importFrom graphics title
 #' @import ggplot2
 #' @export
 #' 
