@@ -1,7 +1,7 @@
 # Load example data
 data("spikeindata", package = "MSstatsLOBD")
 # linear_quantlim() produces expected output
-linear_result = MSstatsLOBD::linear_quantlim(spikeindata)
+linear_result = MSstatsLOBD::linear_quantlim(spikeindata, Nbootstrap = 10)
 expect_inherits(linear_result, "data.frame")
 expect_equal(colnames(linear_result), 
                        c("CONCENTRATION", "MEAN", "LOW", "UP", "LOB", "LOD",
@@ -17,7 +17,7 @@ expect_inherits(linear_result$LOD, "numeric")
 expect_inherits(linear_result$SLOPE, "numeric")
 expect_inherits(linear_result$INTERCEPT, "numeric")
 # nonlinear_quantlim() produces expected output
-nonlinear_result = MSstatsLOBD::nonlinear_quantlim(spikeindata)
+nonlinear_result = MSstatsLOBD::nonlinear_quantlim(spikeindata, Nbootstrap = 10)
 expect_inherits(nonlinear_result, "data.frame")
 expect_equal(colnames(nonlinear_result), 
                        c("CONCENTRATION", "MEAN", "LOW", "UP", "LOB", "LOD",

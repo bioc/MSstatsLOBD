@@ -41,7 +41,7 @@
 #' The data should ideally be plotted using the companion function plot_quantlim to ensure that a linear fit is suited to the data.	
 #' @examples
 #' # Consider data from a spiked-in contained in an example dataset. This dataset contains 
-#' a significant threshold at low concentrations that is not well captured by a linear fit
+#' # a significant threshold at low concentrations that is not well captured by a linear fit
 #' 
 #' head(spikeindata)
 #' 
