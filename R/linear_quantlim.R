@@ -82,9 +82,10 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
   fac = qt(1-alpha,n_blank - 1)*sqrt(1+1/n_blank)
   # upper bound of noise prediction interval
   up_noise = noise   +  fac* sqrt(var_noise)
-  unique_c = sort(unique(tmp_all$C));   var_v = rep(0.0, length(unique_c))
-  weights  = rep(0.0, length(tmp_all$C));
-  weights_nob  = rep(0.0, length(tmp_nob$C));
+  unique_c = sort(unique(tmp_all$C))   
+  var_v = rep(0.0, length(unique_c))
+  weights  = rep(0.0, length(tmp_all$C))
+  weights_nob  = rep(0.0, length(tmp_nob$C))
   
   # Calculate variance for all concentrations:
   ii = 1
@@ -228,7 +229,7 @@ linear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
               control = nls.lm.control(nprint = 1, ftol = sqrt(.Machine$double.eps) / 2, 
                                        maxiter = 50))
       }, error = function(e) NULL)
-      sink();
+      sink()
     }
     if(!is.null(fit.blank_lin)) break
   }
