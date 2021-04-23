@@ -2,14 +2,7 @@
 % Please edit documentation in R/plot_quantlim.R
 \name{plot_quantlim}
 \alias{plot_quantlim}
-\title{This function allows to plot the curve fit that is used to calculate the LOB
-and LOD with functions nonlinear_quantlim() and linear_quantlim(). The
-function outputs for each calibration curve, two pdf files each containg one
-plot. On the first, designated by _overall.pdf, the entire concentration
-range is plotted. On the second plot, designated by _zoom.pdf, the
-concentration range between 0 and xlim_plot (if specified in the argument
-of the function) is plotted. When no xlim_plot value is specified, the
-region close to LOB and LOD is automatically plotted.}
+\title{Plot results of nonlinear_quantlim() and linear_quantlim()}
 \usage{
 plot_quantlim(
   spikeindata,
@@ -72,9 +65,10 @@ region close to LOB and LOD is automatically plotted.
 }
 \examples{
 ##Select peptide of interest:  LPPGLLANFTLLR
-#spikeindata <- raw_data \%>\% filter(NAME == "LPPGLLANFTLLR")
+#spikeindata = raw_data \%>\% filter(NAME == "LPPGLLANFTLLR")
 
-#quant_out <- nonlinear_quantlim(spikeindata)
+#quant_out = nonlinear_quantlim(spikeindata)
 #plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
                address = FALSE)
+               
 }

@@ -10,14 +10,16 @@ Authors@R: c(person("Devon", "Kohler", email = "kohler.d@northeastern.edu", role
           	person("Meena", "Choi", email = "mnchoi67@gmail.com", role="aut"),
           	person("Olga", "Vitek", email = "o.vitek@northeastern.edu", role = "aut"))
 License: Artistic-2.0
-Depends: R (>= 4.0)
-Imports: minpack.lm
+Depends: R (>= 3.6.1)
+Imports: 
+    minpack.lm,
+    ggplot2
 Suggests: 
     BiocStyle,
     knitr,
     rmarkdown,
-    testthat,
-    covr
+    covr,
+    tinytest
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, MassSpectrometry, Proteomics, Software, DifferentialExpression, 

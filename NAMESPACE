@@ -3,4 +3,5 @@
 export(linear_quantlim)
 export(nonlinear_quantlim)
 export(plot_quantlim)
+import(ggplot2)
 import(minpack.lm)
