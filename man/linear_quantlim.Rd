@@ -70,5 +70,6 @@ The data should ideally be plotted using the companion function plot_quantlim to
 
 head(spikeindata)
 
-linear_quantlim_out <- linear_quantlim(spikeindata)
+linear_quantlim_out <- linear_quantlim(spikeindata, Nbootstrap = 10)
+
 }

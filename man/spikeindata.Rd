@@ -4,9 +4,7 @@
 \name{spikeindata}
 \alias{spikeindata}
 \title{Example of normalized datasets from raw_data,}
-\format{
-A data frame with 30 rows and 4 variables.
-}
+\format{A data frame with 30 rows and 4 variables.}
 \usage{
 spikeindata
 }

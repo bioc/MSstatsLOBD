@@ -40,13 +40,15 @@
 #' 
 #' @return list of two ggplot2 object
 #' 
+#' @importFrom grDevices dev.off hcl pdf
+#' @importFrom graphics title
 #' @import ggplot2
 #' @export
 #' 
 #' @examples
 #' 
 #' ## Run LOBD analysis and plot
-#' quant_out = nonlinear_quantlim(spikeindata)
+#' quant_out = nonlinear_quantlim(spikeindata, Nbootstrap = 10)
 #' plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
 #'                address = FALSE)
 #'                

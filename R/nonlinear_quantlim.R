@@ -42,17 +42,23 @@
 #' Each line of the data frame corresponds to a unique concentration value 
 #' at which the value of the fit and prediction interval are evaluated. 
 #' More unique concentrations values than in the input data frame are used to increase the accuracy of the LOB/D calculations.
+#' 
 #' @details The LOB and LOD can only be calculated when more than 2 blank samples are included.
 #' The data should ideally be plotted using the companion function plot_quantlim to ensure that the fit is suited to the data.	
+#' 
 #' @export
+#' 
 #' @import minpack.lm 
+#' @importFrom stats C approx median qt quantile rnorm runif var
+#' @importFrom utils setTxtProgressBar txtProgressBar
+#' 
 #' @examples
 #' # Consider data from a spiked-in contained in an example dataset. This dataset contains 
 #' # a significant threshold at low concentrations that is not well captured by a linear fit
 #' 
 #' head(spikeindata)
 #' 
-#' nonlinear_quantlim_out <- nonlinear_quantlim(spikeindata)
+#' nonlinear_quantlim_out <- nonlinear_quantlim(spikeindata, Nboostrap = 10)
 #' 
 nonlinear_quantlim = function(datain, alpha = 0.05, Npoints = 100, 
                               Nbootstrap = 2000, num_changepoint_samples = 30,

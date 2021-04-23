@@ -66,7 +66,7 @@ region close to LOB and LOD is automatically plotted.
 \examples{
 
 ## Run LOBD analysis and plot
-quant_out = nonlinear_quantlim(spikeindata)
+quant_out = nonlinear_quantlim(spikeindata, Nbootstrap = 10)
 plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
                address = FALSE)
                

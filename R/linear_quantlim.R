@@ -45,9 +45,8 @@
 #' 
 #' head(spikeindata)
 #' 
-#' linear_quantlim_out <- linear_quantlim(spikeindata)
-
-
+#' linear_quantlim_out <- linear_quantlim(spikeindata, Nbootstrap = 10)
+#' 
 linear_quantlim = function(datain, alpha = 0.05, Npoints = 100, 
                            Nbootstrap = 500, num_changepoint_samples = 30,
                            num_prediction_samples = 200, max_iter = 30) {
