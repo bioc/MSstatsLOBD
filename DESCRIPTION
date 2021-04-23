@@ -10,7 +10,8 @@ Description: The MSstatsLOBD package allows calculation and visualization of
     measured concentration value for which the probability of falsely claiming 
     the absence of a peptide in the sample is 0.05, given a probability 0.05 of 
     falsely claiming its presence. These functionalities were previously 
-    a part of the MSstats package.
+    a part of the MSstats package. The methodology is described
+    in Galitzine (2018) <doi:10.1074/mcp.RA117.000322>.
 Authors@R: c(person("Devon", "Kohler", email = "kohler.d@northeastern.edu", role = c("aut", "cre")),
             person("Mateusz", "Staniak", email = "mtst@mstaniak.pl", role = c("aut")),
             person("Cyril", "Galitzine", email = "cyrildgg@gmail.com", role = "aut"),
