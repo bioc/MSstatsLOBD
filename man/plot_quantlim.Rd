@@ -64,11 +64,10 @@ of the function) is plotted. When no xlim_plot value is specified, the
 region close to LOB and LOD is automatically plotted.
 }
 \examples{
-##Select peptide of interest:  LPPGLLANFTLLR
-#spikeindata = raw_data \%>\% filter(NAME == "LPPGLLANFTLLR")
 
-#quant_out = nonlinear_quantlim(spikeindata)
-#plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
+## Run LOBD analysis and plot
+quant_out = nonlinear_quantlim(spikeindata)
+plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
                address = FALSE)
                
 }

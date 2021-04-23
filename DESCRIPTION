@@ -19,7 +19,8 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
-    tinytest
+    tinytest,
+    dplyr
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 biocViews: ImmunoOncology, MassSpectrometry, Proteomics, Software, DifferentialExpression, 

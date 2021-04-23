@@ -4,7 +4,9 @@
 \name{raw_data}
 \alias{raw_data}
 \title{Example of dataset that contains spike in data for 43 distinct peptides.}
-\format{A data frame with 3870 rows and 16 variables.}
+\format{
+A data frame with 3870 rows and 16 variables.
+}
 \usage{
 raw_data
 }
