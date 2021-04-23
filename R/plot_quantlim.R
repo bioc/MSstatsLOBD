@@ -172,17 +172,17 @@ plot_quantlim = function(spikeindata,
                         size =pw*1.5)
   p1 = p1 + geom_line(data=data.frame(x=xaxis_orig_2, y=mean_bilinear, 
                                        col='mean prediction', lt = 'mean'),
-                       aes(x=x, y=y, color=col), size = lw)
+                       aes_string(x="x", y="y", color="col"), size = lw)
   p1 = p1 + geom_ribbon(data=data.frame(x=xaxis_orig_2, ymin =lower_Q_pred, 
                                          ymax =upper_Q_pred), 
-                         aes(x=x, ymin=ymin, ymax=ymax), fill = red1, 
+                        aes_string(x="x", ymin="ymin", ymax="ymax"), fill = red1, 
                          alpha = 0.3)
   p1 = p1 + geom_line(data = data.frame(x=xaxis_orig_2, ymin =lower_Q_pred, 
                                          col = low_pred, lt = 'Int'), 
-                       aes(x=x, y=ymin, color = col), size = lw)
+                      aes_string(x="x", y="ymin", color = "col"), size = lw)
   p1 = p1 + geom_line(data=data.frame(x=xaxis_orig_2, ymax = rep(
     up_noise,length(xaxis_orig_2)), col = "95% upper bound of noise"),
-    aes(x=x, y=ymax, color = col),
+    aes_string(x="x", y="ymax", color = "col"),
     size  = lw)
   p1 = p1 + scale_alpha_continuous(guide = 'none') 
   p1 = p1 + xlab('Spiked Concentration') + ylab('Estimated Concentration')
@@ -205,13 +205,13 @@ plot_quantlim = function(spikeindata,
     abs(xaxis_orig_2 - LOD_pred)))]
   p1 = p1 + geom_point(data=data.frame(x= LOD_pred, y= y_LOD_pred, 
                                         shape='LOD'),
-                        aes(x=x, y=y, shape = shape, guide=FALSE), 
+                        aes_string(x="x", y="y", shape = "shape", guide=FALSE), 
                         colour="purple", size=5)
   LOQ_y = lower_Q_pred[which(abs(up_noise - lower_Q_pred) == min(
     abs(up_noise - lower_Q_pred)))]
   p1 = p1 + geom_point(data=data.frame(x= LOQ_pred, y= y_LOQ_pred, 
                                         shape='LOQ'),
-                        aes(x=x, y=y, shape = shape, guide=FALSE),
+                        aes_string(x="x", y="y", shape = "shape", guide=FALSE),
                         colour=orange1,size=5)
   LOD_string = paste('LOB=', round(LOD_pred, digits=1),sep='')   
   LOQ_string = paste('LOD=',round(LOQ_pred, digits=1),sep='') 
@@ -271,23 +271,23 @@ plot_quantlim = function(spikeindata,
                                        y=mean_bilinear,
                                        col='mean prediction',
                                        lt = 'mean'),
-                       aes(x=x, y=y, color=col), 
+                       aes_string(x="x", y="y", color="col"), 
                        size = lw) 
   p1 = p1 + geom_ribbon(data=data.frame(x=xaxis_orig_2,ymin =lower_Q_pred , 
                                          ymax =upper_Q_pred), 
-                         aes(x=x, ymin=ymin, ymax=ymax),
+                         aes_string(x="x", ymin="ymin", ymax="ymax"),
                          fill = red1, 
                          alpha = 0.3)
   p1 = p1 + geom_line(data = data.frame(x=xaxis_orig_2, 
                                          ymin =lower_Q_pred, 
                                          col = 'lower 95% prediction', 
                                          lt = 'Int'), 
-                       aes(x=x, y=ymin, color = col), 
+                       aes_string(x="x", y="ymin", color = "col"), 
                        size = lw)
   p1 = p1 + geom_line(data=data.frame(x=xaxis_orig_2, ymax = rep(
     up_noise,length(xaxis_orig_2)),
     col = "95% upper bound of noise"),
-    aes(x=x, y=ymax, color = col),
+    aes_string(x="x", y="ymax", color = "col"),
     size = lw)
   p1 = p1 + scale_alpha_continuous(guide = 'none') 
   p1 = p1 + xlab('Spiked Concentration') + ylab('Estimated Concentration')
@@ -308,14 +308,14 @@ plot_quantlim = function(spikeindata,
   LOD_y = mean_bilinear[which(abs(xaxis_orig_2 - LOD_pred) == min(
     abs(xaxis_orig_2 - LOD_pred)))]
   p1 = p1 + geom_point(data=data.frame(x=LOD_pred, y=y_LOD_pred, shape='LOD'),
-                        aes(x=x, y=y, shape = shape, guide=FALSE),
+                        aes_string(x="x", y="y", shape = "shape", guide=FALSE),
                         colour="purple",
                         size=5)
   LOQ_y = lower_Q_pred[which(abs(up_noise - lower_Q_pred) == min(
     abs(up_noise - lower_Q_pred)))]
   p1 = p1 +  geom_point(data=data.frame(x= LOQ_pred, y= y_LOQ_pred, 
                                          shape='LOQ'),
-                         aes(x=x, y=y, shape = shape, guide=FALSE), 
+                         aes_string(x="x", y="y", shape = "shape", guide=FALSE), 
                          colour=orange1,
                          size=5)
   LOD_string = paste0('LOB=',round(LOD_pred, digits=1))
