@@ -38,7 +38,7 @@
 #' the file as well as how to modify the beginning of the file name. If
 #' address=FALSE, plot will be not saved as pdf file but showed in window
 #' 
-#' @return plot or pdf
+#' @return list of two ggplot2 object
 #' 
 #' @import ggplot2
 #' @export
@@ -164,6 +164,8 @@ plot_quantlim = function(spikeindata,
   upp_noise = paste(high_p, " upper bound of noise")
   low_pred = paste(low_p, 'percentile of predictions') 
   
+  plots_list = vector("list", 2)
+  
   p1 = ggplot() + .theme_complete_bw()
   p1 = p1 + geom_point(data=data.frame(Cdata,Idata) , aes(x=Cdata,y=Idata), 
                         size =pw*1.5)
@@ -220,6 +222,8 @@ plot_quantlim = function(spikeindata,
                            LOQ_string,sep="")) + 
     theme(plot.title = element_text(size = 20))
   print(p1)
+  
+  plots_list[[1]] = p1
   
   if (address != FALSE) {
     dev.off()
@@ -324,8 +328,11 @@ plot_quantlim = function(spikeindata,
     theme(plot.title = element_text(size = 20))
   print(p1)
   
+  plots_list[[2]] = p1
+  
   if (address != FALSE) {
     dev.off()
   }
   
+  plots_list
 }

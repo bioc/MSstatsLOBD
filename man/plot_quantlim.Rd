@@ -51,7 +51,7 @@ the file as well as how to modify the beginning of the file name. If
 address=FALSE, plot will be not saved as pdf file but showed in window}
 }
 \value{
-plot or pdf
+list of two ggplot2 object
 }
 \description{
 This function allows to plot the curve fit that is used to calculate the LOB
