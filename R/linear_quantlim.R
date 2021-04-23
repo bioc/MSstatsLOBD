@@ -1,16 +1,53 @@
-#' Linear quantlim
+#' Calculation of the LOB and LOD with a  linear fit
 #' 
-#' The goal of this function is to calculate the LoD/LoQ of the data provided in the data frame.
-#' The function returns a new data frame containing the value of the LoD/LoQ
+#' This function calculates the value of the LOB (limit of blank) and LOD (limit of detection) 
+#' from the (Concentration, Intensity) spiked in data.
+#' The function also returns the values of the linear curve fit that allows it to be plotted. 
+#' At least 2 blank samples (characterized by Intensity = 0) are required by this function
+#'  which are used to calculate the background noise. T
+#'  he LOB is defined as the concentration at which the value of the linear fit is equal to the 95\% upper bound of the noise. 
+#'  The LOD is the concentration at which the latter is equal to the 90\% lower bound of the prediction interval (5\% quantile) of the linear fit. 
+#'  A weighted linear fit is used with weights for every unique concentration proportional to the inverse of variance between replicates.
 #' 
+#' @export
+#' @import minpack.lm 
+#' @param datain Data frame that contains the input data. 
+#' The input data frame has to contain the following columns : CONCENTRATION, 
+#' INTENSITY (both of which are measurements from the spiked in experiment) 
+#' and NAME which designates the name of the assay (e.g. the name of the peptide or protein)}
+#' @param alpha Probability level to estimate the LOB/LOD
+#' @param Npoints Number of points to use to discretize the concentration line between 0 and the maximum spiked concentration
+#' @param Nbootstrap Number of bootstrap samples to use to calculate the prediction interval of the fit. 
+#' This number has to be increased for very low alpha values or whenever very accurate assay characterization is required.
 #' @param num_changepoint_samples Number of bootstrap samples for the prediction 
 #' inteval for the changepoint. Large values can make calculations very expensive
 #' @param num_prediction_samples Number of prediction samples to generate
 #' @param max_iter Number of trials for convergence of every curvefit algorithm
+#' @return data.frame, It contains the following columns: 
+#' i) CONCENTRATION: Concentration values at which the value of the fit is calculated 
+#' ii) MEAN: The value of the curve fit 
+#' iii) LOW: The value of the lower bound of the 95\% prediction interval 
+#' iv) UP: The value of the upper bound of the 95\% prediction interval 
+#' v) LOB: The value of the LOB (one column with identical values) 
+#' vi) LOD: The value of the LOD (one column with identical values) 
+#' vii) SLOPE: Value of the slope of the linear curve fit where only the spikes above LOD are considered 
+#' viii) INTERCEPT: Value of the intercept of the linear curve fit where only the spikes above LOD are considered 
+#' ix) NAME: The name of the assay (identical to that provided in the input) 
+#' x) METHOD which is always set to LINEAR when this function is used. 
+#' Each line of the data frame corresponds to a unique concentration value 
+#' at which the value of the fit and prediction interval are evaluated. 
+#' More unique concentrations values than in the input data frame are used to increase the accuracy of the LOB/D calculations.
+#' @details The LOB and LOD can only be calculated when more than 2 blank samples are included.
+#' The data should ideally be plotted using the companion function plot_quantlim to ensure that a linear fit is suited to the data.	
+#' @examples
+#' # Consider data from a spiked-in contained in an example dataset. This dataset contains 
+#' a significant threshold at low concentrations that is not well captured by a linear fit
 #' 
-#' @export
-#' @import minpack.lm 
+#' head(spikeindata)
 #' 
+#' linear_quantlim_out <- linear_quantlim(spikeindata)
+
+
 linear_quantlim = function(datain, alpha = 0.05, Npoints = 100, 
                            Nbootstrap = 500, num_changepoint_samples = 30,
                            num_prediction_samples = 200, max_iter = 30) {
