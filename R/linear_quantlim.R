@@ -50,6 +50,7 @@
 linear_quantlim = function(datain, alpha = 0.05, Npoints = 100, 
                            Nbootstrap = 500, num_changepoint_samples = 30,
                            num_prediction_samples = 200, max_iter = 30) {
+  title = label = NULL
   if(alpha >= 1 | alpha  <= 0) {
     stop("incorrect specified value for alpha,  0 < alpha < 1")
   }
