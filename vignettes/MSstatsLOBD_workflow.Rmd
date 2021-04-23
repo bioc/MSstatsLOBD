@@ -1,24 +1,24 @@
 ---
 title: "LOB/LOD Estimation Workflow"
 author: "Cyril Galitzine"
-output:
-  html_document:
-    df_print: paged
-  pdf_document: default
-citation_package: natbib
-latex_engine: pdflatex
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LOB/LOD Estimation Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 --- 
 
 
 Load the required packages
 
 ```{r error=FALSE, warning=FALSE, message=FALSE}
-library(MSstatsLODQ)
-library(tidyverse)
+library(MSstatsLOBD)
+library(dplyr)
 ```
 
 This Vignette provides an example workflow for how to use the package 
-MSstatsLODQ.
+MSstatsLOBD.
 
 ## Installation
 
@@ -28,7 +28,7 @@ To install this package, start R (version "4.0") and enter:
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("MSstatsLODQ")
+BiocManager::install("MSstatsLOBD")
 ```
 
 
@@ -94,14 +94,14 @@ The intensity is finally converted back to original space.
 
 ```{r tidy=FALSE, warning=FALSE}
 #Select variable that are need
-df <- tbl_df(raw_data) %>%  select(Peptide.Sequence,Precursor.Charge, 
-                                   Product.Charge, Fragment.Ion,Concentration, 
-                                   Replicate, light.Area, heavy.Area, 
-                                   SampleGroup, File.Name)
+df <- raw_data %>% select(Peptide.Sequence,Precursor.Charge, 
+                          Product.Charge, Fragment.Ion,Concentration, 
+                          Replicate, light.Area, heavy.Area, 
+                          SampleGroup, File.Name)
 
 #Convert factors to numeric and remove NA values:
-df <- df %>% 
-  mutate(heavy.Area = as.numeric(heavy.Area)) %>% filter(!is.na(heavy.Area))
+df <- df %>% mutate(heavy.Area = as.numeric(heavy.Area)) %>% 
+  filter(!is.na(heavy.Area))
 
 #Sum area over all fragments
 df2 <- df %>% group_by(Peptide.Sequence, Replicate, SampleGroup, 
@@ -254,6 +254,39 @@ plot_quantlim(spikeindata = spikeindata2, quantlim_out  = quant_out2,
 The plots indicate that the fit is observed to be linear as the response is 
 linear.
 
+## 4.3 LOB/LOD linear estimation for a non-linear peptide
+
+```{r warning=FALSE}
+
+#Call MSStatsLOD function:
+quant_out <- linear_quantlim(spikeindata)
+
+head(quant_out)
+```
+
+After estimating LOB/LOD we can plot the results.
+
+```{r error=FALSE, warning=FALSE, message=FALSE}
+#plot results in the directory
+plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, address =  FALSE)
+```
+
+## 4.4 LOB/LOD linear estimation for a linear peptide
+
+```{r warning=FALSE}
+
+#Call MSStatsLOD function:
+quant_out <- linear_quantlim(spikeindata2)
+
+head(quant_out)
+```
+
+After estimating LOB/LOD we can plot the results.
+
+```{r error=FALSE, warning=FALSE, message=FALSE}
+#plot results in the directory
+plot_quantlim(spikeindata = spikeindata2, quantlim_out = quant_out, address =  FALSE)
+```
 
 ## REFERENCES
 

@@ -44,11 +44,10 @@
 #' @export
 #' 
 #' @examples
-#' ##Select peptide of interest:  LPPGLLANFTLLR
-#' #spikeindata = raw_data %>% filter(NAME == "LPPGLLANFTLLR")
 #' 
-#' #quant_out = nonlinear_quantlim(spikeindata)
-#' #plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
+#' ## Run LOBD analysis and plot
+#' quant_out = nonlinear_quantlim(spikeindata)
+#' plot_quantlim(spikeindata = spikeindata, quantlim_out = quant_out, 
 #'                address = FALSE)
 #'                
 plot_quantlim = function(spikeindata, 
@@ -221,11 +220,11 @@ plot_quantlim = function(spikeindata,
   p1 = p1 + ggtitle(paste(datain$NAME,'\n', LOD_string, ', ', 
                            LOQ_string,sep="")) + 
     theme(plot.title = element_text(size = 20))
-  print(p1)
   
   plots_list[[1]] = p1
   
   if (address != FALSE) {
+    print(p1)
     dev.off()
   }
   
@@ -326,11 +325,11 @@ plot_quantlim = function(spikeindata,
   p1 = p1 + ggtitle(paste(datain$NAME,'\n', LOD_string, ', ', 
                            LOQ_string,sep="")) + 
     theme(plot.title = element_text(size = 20))
-  print(p1)
   
   plots_list[[2]] = p1
   
   if (address != FALSE) {
+    print(p1)
     dev.off()
   }
   
