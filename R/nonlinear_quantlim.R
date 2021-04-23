@@ -122,7 +122,6 @@ nonlinear_quantlim = function(datain, alpha = 0.05, Npoints = 100,
                       ncol = length(xaxis_orig_2))
   
   change_B = rep(NA, Nbootstrap)
-  set.seed(123) # MATEUSZ: discouraged by BIOC
   for (j in 1:Nbootstrap) {
     setTxtProgressBar(pb, j / Nbootstrap, title = NULL, label = NULL)
     lin.blank_B = NULL
