@@ -1,7 +1,7 @@
 # MSstatsLOBD
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.org/Vitek-Lab/MSstatsLOBD.svg?branch=main)](https://travis-ci.com/Vitek-Lab/MSstatsLOBD)
+[![Travis build status](https://travis-ci.org/Vitek-Lab/MSstatsLOBD.svg?branch=main)](https://travis-ci.org/Vitek-Lab/MSstatsLOBD)
 <!-- badges: end -->
 
 ## Installation 
