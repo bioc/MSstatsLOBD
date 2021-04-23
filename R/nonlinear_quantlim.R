@@ -58,7 +58,7 @@
 #' 
 #' head(spikeindata)
 #' 
-#' nonlinear_quantlim_out <- nonlinear_quantlim(spikeindata, Nboostrap = 10)
+#' nonlinear_quantlim_out <- nonlinear_quantlim(spikeindata, Nbootstrap = 10)
 #' 
 nonlinear_quantlim = function(datain, alpha = 0.05, Npoints = 100, 
                               Nbootstrap = 2000, num_changepoint_samples = 30,
