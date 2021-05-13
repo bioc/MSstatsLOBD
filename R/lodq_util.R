@@ -1,48 +1,48 @@
 #' @keywords internal
-.bilinear = function(x, intercept, slope, change) { 
+.bilinear <- function(x, intercept, slope, change) { 
   ifelse(x < change, intercept, slope * (x - change) + intercept) 
 }
 
 #' @keywords internal
-.second = function(x, intercept, slope, slope2) {
+.second <- function(x, intercept, slope, slope2) {
   slope2 * x * x + slope * x + intercept
 }
 
 #' @keywords internal
-.bilinear_LOD = function(x, intercept, slope, change) { 
+.bilinear_LOD <- function(x, intercept, slope, change) { 
   ifelse(x < change, intercept, slope * (x - change) + intercept) 
 }
 
 #' @keywords internal
-.bilinear_LOD_nonlin = function(x, intercept, slope, change,exponent) { 
+.bilinear_LOD_nonlin <- function(x, intercept, slope, change,exponent) { 
   ifelse(x < change, intercept, slope * (x - change)^exponent + intercept) 
 }
 
 #' @keywords internal
-.linear = function(x, intercept, slope){
+.linear <- function(x, intercept, slope){
   slope * x + intercept
 }
 
 #' @keywords internal
-.invlinear = function(y, intercept, slope) {
+.invlinear <- function(y, intercept, slope) {
   (y - intercept) / slope
 }
 
 #' @keywords internal
-.fun_error = function(dir, peptide, site, message) {
-  filename = paste(dir, "/", paste(peptide, "_", site, ".txt", sep = ""),
+.fun_error <- function(dir, peptide, site, message) {
+  filename <- paste(dir, "/", paste(peptide, "_", site, ".txt", sep = ""),
                    sep = "")
   write(message, file = filename)
 }
 
 #' @keywords internal
-.ggplotColours = function(n = 6, h = c(0, 360) + 15){
+.ggplotColours <- function(n = 6, h = c(0, 360) + 15){
   if ((diff(h) %% 360) < 1) h[2] = h[2] - 360 / n
   hcl(h = (seq(h[1], h[2], length = n)), c = 100, l = 65)
 }
 
 #' @keywords internal
-.theme_complete_bw = function(base_size = 12, base_family = "") {
+.theme_complete_bw <- function(base_size = 12, base_family = "") {
   theme_grey(base_size = base_size, base_family = base_family) +
     theme(
       axis.line = element_blank(),
