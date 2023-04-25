@@ -1,7 +1,7 @@
 Type: Package
 Package: MSstatsLOBD
 Title: Assay characterization: estimation of limit of blanc(LoB) and limit of detection(LOD)
-Version: 1.7.0
+Version: 1.8.0
 Date: 2021-04-12
 Description: The MSstatsLOBD package allows calculation and visualization of 
     limit of blac (LOB) and limit of detection (LOD). We define the LOB as the 
